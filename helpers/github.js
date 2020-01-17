@@ -5,13 +5,13 @@ let getReposByUsername = (/* TODO */) => {
   // TODO - Use the request module to request repos for a specific
   // user from the github API
 
-  // The options object has been provided to help you out, 
+  // The options object has been provided to help you out,
   // but you'll have to fill in the URL
   let options = {
     url: 'FILL ME IN',
     headers: {
       'User-Agent': 'request',
-      'Authorization': `token ${config.TOKEN}`
+      'Authorization': `token ${8c1d992b1f84e3f359fe5c24194080a3647217d4}`
     }
   };
 

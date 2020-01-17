@@ -1,21 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
+import fetch from './model/fetch'
 import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       repos: []
-    }
+    };
 
   }
 
   search (term) {
     console.log(`${term} was searched`);
-    // TODO
+    fetch(term)
   }
 
   render () {

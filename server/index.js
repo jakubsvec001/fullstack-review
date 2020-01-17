@@ -1,4 +1,7 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+
 let app = express();
 
 app.use(express.static(__dirname + '/../client/dist'));
