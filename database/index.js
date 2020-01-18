@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/fetcher");
+const mongoose = require('mongoose');
 
-let repoSchema = mongoose.Schema({
+mongoose.connect('mongodb://localhost/fetcher');
+
+const repoSchema = mongoose.Schema({
   collectionId: mongoose.Schema.ObjectId,
   repoId: { type: Number, required: true, unique: false },
   repoName: { type: String, required: true, unique: false },
@@ -17,9 +18,9 @@ let repoSchema = mongoose.Schema({
   issueCount: { type: Number, required: true, unique: false }
 });
 
-let RepoModel = mongoose.model("RepoModel", repoSchema);
+const RepoModel = mongoose.model('RepoModel', repoSchema);
 
-let contributorSchema = mongoose.Schema({
+const contributorSchema = mongoose.Schema({
   collectionId: mongoose.Schema.ObjectId,
   repoId: { type: Number, required: true, unique: false },
   repoName: { type: String, required: true, unique: false },
@@ -27,11 +28,11 @@ let contributorSchema = mongoose.Schema({
   contributorName: { type: String, required: true, unique: false }
 });
 
-let ContributorModel = mongoose.model("ContributorModeld", contributorSchema);
+// const ContributorModel = mongoose.model('ContributorModeld', contributorSchema);
 
-const filterRepoData = repoArray => {
+const filterRepoData = (repoArray) => {
   const filtered = [];
-  repoArray.forEach(repo => {
+  repoArray.forEach((repo) => {
     filtered.push({
       repoId: repo.id,
       repoName: repo.name,
@@ -50,53 +51,55 @@ const filterRepoData = repoArray => {
   return filtered;
 };
 
-let save = repoArray => {
+let save = (repoArray) => {
   const filtered = filterRepoData(repoArray);
-  filtered.forEach(repo => {
+  filtered.forEach((repo) => {
     // before placing anything into the collection, check if it exists already with .findOne()
-    RepoModel.findOne({repoId: repo.repoId})
+    RepoModel.findOne({ repoId: repo.repoId })
       // if already exists, do nothing
-      .then(entry => {
+      .then((entry) => {
         if (entry === null) {
           // if not exists, save to collection
-          console.log("doesn't exist yet, entering in collection 'repoModels'");
+          console.log(`doesn't exist yet, entering in collection 'repoModels'`);
           RepoModel.create(repo, (err, reply) => {
             if (err) {
-              console.log("ERROR inserting new data: ", err)
+              console.log('ERROR inserting new data: ', err);
             } else {
-              console.log("SUCCESSFULLY ADDED TO COLLECTION!")
+              console.log('SUCCESSFULLY ADDED TO COLLECTION!');
             }
-          })
+          });
         } else {
-          console.log("Entry Already Exits");
+          console.log('Entry Already Exits');
         }
       })
-      .catch(err => {
+      .catch((err) => {
         throw err;
       });
   });
 };
 
-
-
 const retrieveAllAndSort = (sortMethod, res) => () => {
-  if (["createdAt", "updatedAt", "size", "watchCount", "issueCount"].includes(sortMethod)){
-    console.log("SORT METHOD: ", sortMethod )
+  if (
+    ['createdAt', 'updatedAt', 'size', 'watchCount', 'issueCount'].includes(
+      sortMethod
+    )
+  ) {
+    console.log('SORT METHOD: ', sortMethod);
     RepoModel.find({})
-    .limit(25)
-    .sort({ [sortMethod]: -1 })
-    .then( docs => {
-      console.log('Retrieved All Documents')
-      console.log("limited, sorted docs: ", docs)
-      console.log(typeof JSON.stringify(docs))
-      res.send(JSON.stringify(docs))
-    })
-    .catch( err => {
-      console.log("ERROR in retriveAllAndSort: ", err)
-    })
+      .limit(25)
+      .sort({ [sortMethod]: -1 })
+      .then((docs) => {
+        console.log('Retrieved All Documents');
+        console.log('limited, sorted docs: ', docs);
+        console.log(typeof JSON.stringify(docs));
+        res.send(JSON.stringify(docs));
+      })
+      .catch((err) => {
+        console.log('ERROR in retriveAllAndSort: ', err);
+      });
   } else {
-    console.log("SORT METHOD NOT YET IMPLEMENTED")
+    console.log('SORT METHOD NOT YET IMPLEMENTED');
   }
-}
+};
 
 module.exports = { save, retrieveAllAndSort };
