@@ -6,6 +6,7 @@ const repoSchema = mongoose.Schema({
   collectionId: mongoose.Schema.ObjectId,
   repoId: { type: Number, required: true, unique: false },
   repoName: { type: String, required: true, unique: false },
+  repoUrl: { type: String, required: true, unique: false },
   userId: { type: Number, required: true, unique: false },
   userName: { type: String, required: true, unique: false },
   userUrl: { type: String, required: true, unique: false },
@@ -32,10 +33,12 @@ const contributorSchema = mongoose.Schema({
 
 const filterRepoData = (repoArray) => {
   const filtered = [];
+  console.log(repoArray);
   repoArray.forEach((repo) => {
     filtered.push({
       repoId: repo.id,
       repoName: repo.name,
+      repoUrl: `http://www.github.com/${repo.full_name}`,
       userId: repo.owner.id,
       userName: repo.owner.login,
       userUrl: repo.owner.url,
@@ -51,7 +54,7 @@ const filterRepoData = (repoArray) => {
   return filtered;
 };
 
-let save = (repoArray) => {
+let save = (repoArray, callback) => {
   const filtered = filterRepoData(repoArray);
   filtered.forEach((repo) => {
     // before placing anything into the collection, check if it exists already with .findOne()
@@ -60,12 +63,18 @@ let save = (repoArray) => {
       .then((entry) => {
         if (entry === null) {
           // if not exists, save to collection
-          console.log(`doesn't exist yet, entering in collection 'repoModels'`);
+          console.log(
+            `does not exist yet, entering in collection 'repoModels'`
+          );
           RepoModel.create(repo, (err, reply) => {
             if (err) {
               console.log('ERROR inserting new data: ', err);
             } else {
               console.log('SUCCESSFULLY ADDED TO COLLECTION!');
+              console.log('CALLBACK');
+              if (callback) {
+                callback();
+              }
             }
           });
         } else {
@@ -84,21 +93,18 @@ const retrieveAllAndSort = (sortMethod, res) => () => {
       sortMethod
     )
   ) {
-    console.log('SORT METHOD: ', sortMethod);
     RepoModel.find({})
       .limit(25)
       .sort({ [sortMethod]: -1 })
       .then((docs) => {
-        console.log('Retrieved All Documents');
-        console.log('limited, sorted docs: ', docs);
-        console.log(typeof JSON.stringify(docs));
         res.send(JSON.stringify(docs));
       })
       .catch((err) => {
         console.log('ERROR in retriveAllAndSort: ', err);
       });
-  } else {
-    console.log('SORT METHOD NOT YET IMPLEMENTED');
+    } else {
+      console.log('SORT METHOD NOT YET IMPLEMENTED');
+      res.sendStatus(500);
   }
 };
 

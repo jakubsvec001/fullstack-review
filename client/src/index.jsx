@@ -20,21 +20,25 @@ class App extends React.Component {
     };
   }
 
-  search(term) {
-    console.log(`${term} was searched`);
-    console.log(`sortMethod = ${this.state.sortType}`);
-    postUser(term, this.state.sortType)
+  componentDidMount() {
+    postUser('', 'updatedAt')
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log('Component Mounted, got data: ', data);
+        this.setState({ repos: data });
+      })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  componentDidMount() {
-    postUser('', 'updatedAt')
+  search(term) {
+    postUser(term, this.state.sortType)
       .then((response) => response.json())
-      .then((data) => console.log('DATA DID MOUNT: ', data))
+      .then((data) => {
+        console.log('DATA BACK:', data);
+        this.setState({ repos: data });
+      })
       .catch((err) => {
         console.log(err);
       });

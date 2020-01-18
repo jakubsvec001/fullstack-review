@@ -1,20 +1,28 @@
 import React from 'react';
 import RepoItem from './RepoItem.jsx';
 
-const RepoList = (props) => (
-  <div>
-    <h4> Repo List Component </h4>
-    There are {props.repos.length} repos.
-    <RepoItem
-      userName={'Jake Wija'}
-      repoName={'some repo'}
-      createdAt={'05/3/14'}
-      updatedAt={'06/03/22'}
-      size={23456}
-      watchCount={2}
-      issueCount={4}
-    />
-  </div>
-);
+const RepoList = (props) => {
+  return (
+    <div>
+      <h4> Repo List Component </h4>
+      There are {props.repos.length} repos.
+      {props.repos.map((repo, i) => {
+        return (
+          <RepoItem
+            key={i}
+            userName={repo.userName}
+            repoName={repo.repoName}
+            repoUrl={repo.repoUrl}
+            createdAt={repo.createdAt}
+            updatedAt={repo.updatedAt}
+            size={repo.size}
+            watchCount={repo.watchCount}
+            issueCount={repo.issueCount}
+          />
+        );
+      })}
+    </div>
+  );
+};
 
 export default RepoList;

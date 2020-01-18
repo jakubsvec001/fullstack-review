@@ -8,7 +8,7 @@ let getReposByUsername = (userName, callback) => {
 
   // The options object has been provided to help you out,
   // but you'll have to fill in the URL
-  let options = {
+  const options = {
     url: 'https://api.github.com/users/' + userName + '/repos',
     headers: {
       'User-Agent': 'request',
@@ -25,10 +25,7 @@ let getReposByUsername = (userName, callback) => {
       if (repos.message === "Not Found" ){
         console.log("getReposByUserName request cound not find user: ", repos);
       } else {
-        save(repos)
-      }
-      if (callback) {
-        callback()
+        save(repos, callback)
       }
     }
   }
