@@ -79,6 +79,7 @@ let save = (repoArray, callback) => {
           });
         } else {
           console.log('Entry Already Exits');
+          callback();
         }
       })
       .catch((err) => {

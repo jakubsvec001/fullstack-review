@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { getReposByUsername } = require('../helpers/github');
 const { retrieveAllAndSort } = require('../database/index.js');
+let PORT = process.env.PORT || 1128;
 
 let app = express();
 
@@ -21,12 +22,10 @@ app.post('/repos', bodyParser.json(), function(req, res) {
 app.get('/repos', bodyParser.text(), function(req, res) {
   // TODO - your code here!
   // This route should send back the top 25 repos
-
-  retrieveAllAndSort(req.body, res);
+  retrieveAllAndSort('createdAt', res)();
 });
 
-let port = 1128;
 
-app.listen(port, function() {
-  console.log(`listening on port ${port}`);
+app.listen(PORT, function() {
+  console.log(`listening on PORT ${PORT}`);
 });

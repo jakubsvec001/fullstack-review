@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
 import postUser from './model/postUser';
-
+import getReposSorted from './model/getReposSorted';
 // sort by methods
 // createdAt
 // updatedAt
@@ -21,10 +21,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    postUser('', 'updatedAt')
+    getReposSorted('updatedAt')
       .then((response) => response.json())
       .then((data) => {
-        console.log('Component Mounted, got data: ', data);
         this.setState({ repos: data });
       })
       .catch((err) => {
@@ -36,11 +35,10 @@ class App extends React.Component {
     postUser(term, this.state.sortType)
       .then((response) => response.json())
       .then((data) => {
-        console.log('DATA BACK:', data);
         this.setState({ repos: data });
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
       });
   }
 
@@ -48,8 +46,8 @@ class App extends React.Component {
     return (
       <div>
         <h1>Github Fetcher</h1>
-        <RepoList repos={this.state.repos} />
         <Search onSearch={this.search.bind(this)} />
+        <RepoList repos={this.state.repos} />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 const request = require('request');
 const config = require('../config.js');
-const save = require('../database/index').save
+const save = require('../database/index').save;
 
 let getReposByUsername = (userName, callback) => {
   // TODO - Use the request module to request repos for a specific
@@ -12,29 +12,27 @@ let getReposByUsername = (userName, callback) => {
     url: 'https://api.github.com/users/' + userName + '/repos',
     headers: {
       'User-Agent': 'request',
-      'Authorization': `token ${config.TOKEN}`
+      Authorization: `token ${config.TOKEN}`
     }
   };
 
   let cb = (err, response, body) => {
-    console.log("REQUESTING FROM GITHUB...")
-    if (err){
-      console.log("ERROR in github.js", err)
+    console.log('REQUESTING FROM GITHUB...');
+    if (err) {
+      console.log('ERROR in github.js', err);
     } else {
-      const repos = JSON.parse(body)
-      if (repos.message === "Not Found" ){
-        console.log("getReposByUserName request cound not find user: ", repos);
+      const repos = JSON.parse(body);
+      if (repos.message === 'Not Found') {
+        // console.log('getReposByUserName request cound not find user: ', repos);
       } else {
-        save(repos, callback)
+        save(repos, callback);
       }
     }
-  }
+  };
 
-  request(options, cb)
-}
+  request(options, cb);
+};
 
-  // use request module to fetch from url and options
+// use request module to fetch from url and options
 
-
-
-module.exports = {getReposByUsername};
+module.exports = { getReposByUsername };
