@@ -2,36 +2,101 @@ const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost/fetcher");
 
 let repoSchema = mongoose.Schema({
-  id : mongoose.ObjectId,
-  repoId:  {type: Number, required: true, unique: false},
-  repoName: {type: String,required: true, unique: false},
-  userId: {type: Number, required: true, unique: false},
-  userName: {type: String,required: true, unique: false},
-  description: {type: String, required: false, unique: false}
-  createdAt: {type: Date required: true, unique: false},
-  updatedAt: {type: Date required: true, unique: false},
-  size: {type: Number, required: true, unique: false},
-  watchCount: {type: Number, required: true, unique: false},
-  forkCount: {type: Number, required: true, unique: false},
-  issueCount: {type: Number, required: true, unique: false},
+  collectionId: mongoose.Schema.ObjectId,
+  repoId: { type: Number, required: true, unique: false },
+  repoName: { type: String, required: true, unique: false },
+  userId: { type: Number, required: true, unique: false },
+  userName: { type: String, required: true, unique: false },
+  userUrl: { type: String, required: true, unique: false },
+  description: { type: String, required: false, unique: false },
+  createdAt: { type: Date, required: true, unique: false },
+  updatedAt: { type: Date, required: true, unique: false },
+  size: { type: Number, required: true, unique: false },
+  watchCount: { type: Number, required: true, unique: false },
+  forkCount: { type: Number, required: false, unique: false },
+  issueCount: { type: Number, required: true, unique: false }
 });
+
+let RepoModel = mongoose.model("RepoModel", repoSchema);
 
 let contributorSchema = mongoose.Schema({
-  id: mongoose.ObjectId,
-  repoId:  {type: Number, required: true, unique: false},
-  repoName: {type: String,required: true, unique: false},
-  contributorId: {type: Number, required: true, unique: false},
-  contributorName: {type: String,required: true, unique: false},
+  collectionId: mongoose.Schema.ObjectId,
+  repoId: { type: Number, required: true, unique: false },
+  repoName: { type: String, required: true, unique: false },
+  contributorId: { type: Number, required: true, unique: false },
+  contributorName: { type: String, required: true, unique: false }
 });
 
-let RepoModel = mongoose.model("Repo", repoSchema);
+let ContributorModel = mongoose.model("ContributorModeld", contributorSchema);
 
-let ContributorModel = mongoose.model("Repo", contributorSchema);
-
-let save = (/* TODO */) => {
-  // TODO: Your code here
-  // This function should save a repo or repos to
-  // the MongoDB
+const filterRepoData = repoArray => {
+  const filtered = [];
+  repoArray.forEach(repo => {
+    filtered.push({
+      repoId: repo.id,
+      repoName: repo.name,
+      userId: repo.owner.id,
+      userName: repo.owner.login,
+      userUrl: repo.owner.url,
+      description: repo.description,
+      createdAt: repo.created_at,
+      updatedAt: repo.updated_at,
+      size: repo.size,
+      watchCount: repo.watchers,
+      forkCount: repo.fork_count,
+      issueCount: repo.open_issues_count
+    });
+  });
+  return filtered;
 };
 
-module.exports.save = save;
+let save = repoArray => {
+  const filtered = filterRepoData(repoArray);
+  filtered.forEach(repo => {
+    // before placing anything into the collection, check if it exists already with .findOne()
+    RepoModel.findOne({repoId: repo.repoId})
+      // if already exists, do nothing
+      .then(entry => {
+        if (entry === null) {
+          // if not exists, save to collection
+          console.log("doesn't exist yet, entering in collection 'repoModels'");
+          RepoModel.create(repo, (err, reply) => {
+            if (err) {
+              console.log("ERROR inserting new data: ", err)
+            } else {
+              console.log("SUCCESSFULLY ADDED TO COLLECTION!")
+            }
+          })
+        } else {
+          console.log("Entry Already Exits");
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
+  });
+};
+
+
+
+const retrieveAllAndSort = (sortMethod, res) => () => {
+  if (["createdAt", "updatedAt", "size", "watchCount", "issueCount"].includes(sortMethod)){
+    console.log("SORT METHOD: ", sortMethod )
+    RepoModel.find({})
+    .limit(25)
+    .sort({ [sortMethod]: -1 })
+    .then( docs => {
+      console.log('Retrieved All Documents')
+      console.log("limited, sorted docs: ", docs)
+      console.log(typeof JSON.stringify(docs))
+      res.send(JSON.stringify(docs))
+    })
+    .catch( err => {
+      console.log("ERROR in retriveAllAndSort: ", err)
+    })
+  } else {
+    console.log("SORT METHOD NOT YET IMPLEMENTED")
+  }
+}
+
+module.exports = { save, retrieveAllAndSort };

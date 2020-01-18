@@ -4,14 +4,13 @@ class Search extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      term: 'jakubsvec001'
+      term: ''
     }
     this.search = this.search.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   onChange (e) {
-    console.log(e)
-    console.log(e.target.value)
     this.setState({
       term: e.target.value
     });
@@ -19,8 +18,7 @@ class Search extends React.Component {
 
   search(e) {
     e.preventDefault()
-    console.log('term', this.state)
-    this.props.onSearch(this.state.term);
+    const fetchPromise = this.props.onSearch(this.state.term);
   }
 
   render() {
