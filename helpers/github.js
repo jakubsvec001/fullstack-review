@@ -2,7 +2,7 @@ const request = require('request');
 const config = require('../config.js');
 const save = require('../database/index').save;
 
-let getReposByUsername = (userName, callback) => {
+let getReposByUsername = (userName, res) => {
   // TODO - Use the request module to request repos for a specific
   // user from the github API
 
@@ -25,7 +25,7 @@ let getReposByUsername = (userName, callback) => {
       if (repos.message === 'Not Found') {
         // console.log('getReposByUserName request cound not find user: ', repos);
       } else {
-        save(repos, callback);
+        save(repos, res);
       }
     }
   };

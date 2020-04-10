@@ -4,7 +4,6 @@ const morgan = require('morgan');
 const { getReposByUsername } = require('../helpers/github');
 const { retrieveAllAndSort } = require('../database/index.js');
 let PORT = process.env.PORT || 1128;
-
 let app = express();
 
 app.use(express.static(__dirname + '/../client/dist'));
@@ -16,7 +15,7 @@ app.post('/repos', bodyParser.json(), function(req, res) {
   // and get the repo information from the github API, then
   // save the repo information in the database
   const { userName, sortType } = req.body;
-  getReposByUsername(userName, retrieveAllAndSort(sortType, res));
+  getReposByUsername(userName, res);
 });
 
 app.get('/repos', bodyParser.text(), function(req, res) {

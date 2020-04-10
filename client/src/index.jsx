@@ -4,12 +4,6 @@ import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
 import postUser from './model/postUser';
 import getReposSorted from './model/getReposSorted';
-// sort by methods
-// createdAt
-// updatedAt
-// size
-// watchCount
-// issueCount
 
 class App extends React.Component {
   constructor(props) {
@@ -35,7 +29,12 @@ class App extends React.Component {
     postUser(term, this.state.sortType)
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ repos: data });
+        getReposSorted('createdAt')
+          .then((res) => res.json())
+          .then((data) => {
+            this.setState({ repos: data });
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => {
         // console.log(err);

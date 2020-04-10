@@ -33,7 +33,6 @@ const contributorSchema = mongoose.Schema({
 
 const filterRepoData = (repoArray) => {
   const filtered = [];
-  console.log(repoArray);
   repoArray.forEach((repo) => {
     filtered.push({
       repoId: repo.id,
@@ -51,10 +50,12 @@ const filterRepoData = (repoArray) => {
       issueCount: repo.open_issues_count
     });
   });
+  console.log('length of filtered repoArray: ', filtered.length)
   return filtered;
 };
 
-let save = (repoArray, callback) => {
+let save = (repoArray, res) => {
+  console.log('res', res);
   const filtered = filterRepoData(repoArray);
   filtered.forEach((repo) => {
     // before placing anything into the collection, check if it exists already with .findOne()
@@ -70,16 +71,16 @@ let save = (repoArray, callback) => {
             if (err) {
               console.log('ERROR inserting new data: ', err);
             } else {
-              console.log('SUCCESSFULLY ADDED TO COLLECTION!');
-              console.log('CALLBACK');
-              if (callback) {
-                callback();
+              //added to collection
+              if (res) {
+                res.send(201);
               }
             }
           });
+          //if the repo is already in the database:
         } else {
           console.log('Entry Already Exits');
-          callback();
+          res.send(201);
         }
       })
       .catch((err) => {
@@ -88,7 +89,7 @@ let save = (repoArray, callback) => {
   });
 };
 
-const retrieveAllAndSort = (sortMethod, res) => () => {
+const retrieveAllAndSort = (sortMethod = 'createdAt', res) => () => {
   if (
     ['createdAt', 'updatedAt', 'size', 'watchCount', 'issueCount'].includes(
       sortMethod
@@ -103,9 +104,8 @@ const retrieveAllAndSort = (sortMethod, res) => () => {
       .catch((err) => {
         console.log('ERROR in retriveAllAndSort: ', err);
       });
-    } else {
-      console.log('SORT METHOD NOT YET IMPLEMENTED');
-      res.sendStatus(500);
+  } else {
+    res.sendStatus(500);
   }
 };
 
